@@ -152,7 +152,7 @@ def process_frame(frame, model, class_list, detection_colors):
             )
 
 def main():
-    class_list = read_class_list("Objectdetection/coco.txt")
+    class_list = read_class_list("Objectdetection/helper.txt")
     detection_colors = generate_random_colors(class_list)
     model = load_model("Objectdetection/yolov8n.pt", "v8")
 
