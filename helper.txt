@@ -3,6 +3,10 @@ bicycle
 car
 motorcycle
 airplane
+building
+sea
+road
+ocean
 bus
 train
 truck

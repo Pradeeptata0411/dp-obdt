@@ -23,17 +23,23 @@ def load_model(model_path, version):
     return YOLO(model_path, version)
 
 def process_frame(frame, model, class_list, detection_colors):
+    # Predict detections using the YOLO model
     detect_params = model.predict(source=[frame], conf=0.45, save=False)
+    
+    # Access the detection parameters
     DP = detect_params[0].numpy()
 
+    # Check if there are any detections
     if len(DP) != 0:
         for i in range(len(detect_params[0])):
+            # Extract information for each detection box
             boxes = detect_params[0].boxes
             box = boxes[i]
             clsID = box.cls.numpy()[0]
             conf = box.conf.numpy()[0]
             bb = box.xyxy.numpy()[0]
 
+            # Draw bounding box on the frame
             cv2.rectangle(
                 frame,
                 (int(bb[0]), int(bb[1])),
@@ -42,6 +48,7 @@ def process_frame(frame, model, class_list, detection_colors):
                 3,
             )
 
+            # Add label and confidence to the detection
             font = cv2.FONT_HERSHEY_COMPLEX
             cv2.putText(
                 frame,
@@ -54,37 +61,30 @@ def process_frame(frame, model, class_list, detection_colors):
             )
 
 def main():
+    # Read class list from helper.txt
     class_list = read_class_list("Objectdetection/helper.txt")
+    
+    # Generate random colors for each class
     detection_colors = generate_random_colors(class_list)
+    
+    # Load YOLO model
     model = load_model("Objectdetection/yolov8n.pt", "v8")
 
-    frame_wid = 640
-    frame_hyt = 480
-    cap = cv2.VideoCapture(0)
-    
-    #cap =cv2.VideoCapture("Objectdetection/video.mp4")
-    if not cap.isOpened():
-        print("Cannot open camera")
-        exit()
+    # Read the input image
+    image_path = "Objectdetection/photo.jpg"
+    frame = cv2.imread(image_path)
 
-    while True:
-        ret, frame = cap.read()
+    # Check if the image was loaded successfully
+    if frame is None:
+        print("Error loading image. Make sure the image path is correct.")
+        return
 
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
-            break
+    # Process the single frame
+    process_frame(frame, model, class_list, detection_colors)
 
-        # Uncomment the line below if you want to resize the frame
-        # frame = cv2.resize(frame, (frame_wid, frame_hyt))
-
-        process_frame(frame, model, class_list, detection_colors)
-
-        cv2.imshow("ObjectDetection", frame)
-
-        if cv2.waitKey(1) == ord("q"):
-            break
-
-    cap.release()
+    # Display the result and wait for a key press
+    cv2.imshow("ObjectDetection", frame)
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":

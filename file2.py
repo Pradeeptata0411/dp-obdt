@@ -3,7 +3,7 @@ from ultralytics import YOLO
 # load a pretrained YOLOv8n model
 model = YOLO("Objectdetection/yolov8n.pt", "v8")
 # predict on an image
-detection_output = model.predict(source="Objectdetection/img1.jpeg", conf=0.25, save=True)
+detection_output = model.predict(source="Objectdetection/build-2.jpg", conf=0.25, save=True)
 
 # # Display tensor array
 # print(detection_output)
